@@ -1,19 +1,31 @@
 #!/usr/bin/python3
-"""
-this doc for module
-"""
+"""API usage"""
 import requests
-
-headers = {"User-Agent": "MyCustomUserAgent/1.0"}
 
 
 def top_ten(subreddit):
-    """method doc"""
-    url = "https://www.reddit.com/r/{}/hot.json?limit=10".format(subreddit)
-    response = requests.get(url, allow_redirects=False, headers=headers)
-    if response.status_code == 200:
-        data = response.json()
-        for post in data["data"]["children"]:
-            print(post["data"]["title"])
-    else:
-        print("None")
+    """
+    Returns the number of subscribers for a given subreddit,
+    or 0 if an invalid subreddit is given.
+    """
+    # firstly, authenticate and get token
+    client = "XVngJrvVrijzTzOU09512w"
+    client_key = "h6FGkpwlvaqLY1RjMkr-fn4Yu26SNQ"
+    login = requests.auth.HTTPBasicAuth(client, client_key)
+    header = {"User-Agent": "Mega/0.0.2"}
+    send_data = {"grant_type": "client_credentials"}
+    wanted = {"limit": 9}
+    with requests.post("https://www.reddit.com/api/v1/access_token",
+                       auth=login, headers=header,
+                       data=send_data) as auth_marko:
+        polo_key = auth_marko.json()
+    header["Authorization"] = "bearer {}".format(polo_key["access_token"])
+
+    # using the token to access the API
+    url = "https://oauth.reddit.com/r/{}/hot".format(subreddit)
+    with requests.get(url, headers=header, params=wanted) as marko:
+        if marko.status_code >= 300:
+            return None
+        polo = marko.json()
+    for hot in polo["data"]["children"]:
+        print(hot["data"]["title"])
