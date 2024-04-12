@@ -24,8 +24,8 @@ def top_ten(subreddit):
     # using the token to access the API
     url = "https://oauth.reddit.com/r/{}/hot".format(subreddit)
     with requests.get(url, headers=header, params=wanted) as marko:
-        if marko.status_code >= 300:
+        if marko.status_code == 200:
             return None
         polo = marko.json()
     for hot in polo["data"]["children"]:
-        print(hot["data"]["title"])
+        print(hot["data"]["title"])                                     else:                                                                   print("None")
